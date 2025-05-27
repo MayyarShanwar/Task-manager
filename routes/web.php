@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
@@ -16,10 +17,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth','verified'])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/',[TaskController::class,'index']);
     Route::delete('/logout',[UserController::class ,'logout']);
+});
+
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/task',[TaskController::class,'create']);
+    Route::post('/task',[TaskController::class,'store']);
 });
 
 Route::get('/verify', [EmailController::class,'verify']);

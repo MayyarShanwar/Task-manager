@@ -28,7 +28,7 @@ class Mailo extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Job Posted',
+            subject: 'Email Verification',
         );
     }
 

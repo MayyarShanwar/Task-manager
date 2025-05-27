@@ -28,6 +28,7 @@ class UserController extends Controller
 
 
         $user = User::create($userAttr);
+        Auth::login($user);
 
         Mail::to($user)->send(new Mailo());
 
@@ -46,7 +47,7 @@ class UserController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($userAttr,request('remember-token'))) {
+        if (Auth::attempt($userAttr,request('remember_token'))) {
             return redirect('/');
         }
         else{
