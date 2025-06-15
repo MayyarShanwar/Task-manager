@@ -19,11 +19,11 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth','verified'])->group(function () {
     Route::get('/',[TaskController::class,'index']);
     Route::delete('/logout',[UserController::class ,'logout']);
-});
-
-Route::middleware(['auth','verified'])->group(function () {
     Route::get('/task',[TaskController::class,'create']);
     Route::post('/task',[TaskController::class,'store']);
+    Route::delete('/task/{task}',[TaskController::class,'destroy']);
+    Route::get('/markAllAsRead',[TaskController::class,'markAllAsRead']);
+    Route::get('/{filter}',[TaskController::class,'index'])->name('welcome');
 });
 
 Route::get('/verify', [EmailController::class,'verify']);

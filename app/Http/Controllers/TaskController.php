@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\task;
 use App\Http\Requests\StoretaskRequest;
 use App\Http\Requests\UpdatetaskRequest;
+use App\Notifications\TaskCreated;
+use App\Notifications\TaskDeleted;
+use App\Notifications\TaskNotify;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -15,8 +18,20 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = task::latest()->where('user_id', Auth::user()->id)->get();
-        return view('welcome', ['tasks' => $tasks]);
+        $user = Auth::user();
+        // $user->notify(new TaskNotify($user->first_name, $user->email));
+        $unreadNotifications = $user->unreadNotifications;
+        $readNotifications = $user->readnotifications()->limit(10)->get();
+        $notifications = [...$unreadNotifications, ...$readNotifications];
+        $tasks = [];
+        if (request('filter')) {
+            $tasks = task::latest()->where(['user_id' => $user->id, 'status' => request('filter')])->get();
+            return view('welcome', ['tasks' => $tasks, 'notifications' => $notifications]);
+        } else {
+            $tasks = task::latest()->where(['user_id' => $user->id])->get();
+        }
+
+        return view('welcome', ['tasks' => $tasks, 'notifications' => $notifications]);
     }
 
     /**
@@ -24,7 +39,11 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return view('task.addTask');
+        $user = Auth::user();
+        $unreadNotifications = $user->unreadNotifications;
+        $readNotifications = $user->readnotifications()->limit(10)->get();
+        $notifications = [...$unreadNotifications, ...$readNotifications];
+        return view('task.addTask',['notifications' => $notifications ]);
     }
 
     /**
@@ -45,7 +64,7 @@ class TaskController extends Controller
         ]);
 
         $user = Auth::user()->id;
-        
+
         $task = task::create([
             'title' => $request->title,
             'status' => 'Waiting',
@@ -57,13 +76,16 @@ class TaskController extends Controller
         ]);
 
         if ($request->one_time == 0) {
-            
+
             $task->days = $request->days;
         } else {
             $task->days = [$fixedDays[$request->single_day]];
         }
 
         $task->save();
+
+        $user->notify(new TaskCreated($task->title));
+
         return redirect('/');
     }
 
@@ -96,6 +118,22 @@ class TaskController extends Controller
      */
     public function destroy(task $task)
     {
-        //
+        $title = $task->title;
+        // $console = new ConsoleOutput();
+        // $console->writeln($task);
+        // $console->writeln($taskDelete);
+        $task->delete();
+        Auth::user()->notify(new TaskDeleted($title));
+        return redirect('/');
+    }
+
+    public function markAllAsRead()
+    {
+
+        $user = Auth::user();
+        // $user->notify(new TaskNotify($user->first_name,$user->email));
+        $user->unreadNotifications->markAsRead();
+        $notifications = $user->notifications;
+        return response($notifications);
     }
 }

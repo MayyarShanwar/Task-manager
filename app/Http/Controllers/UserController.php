@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\Mailo;
 use App\Models\User;
+use App\Notifications\TaskNotify;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -28,6 +29,9 @@ class UserController extends Controller
 
 
         $user = User::create($userAttr);
+
+        $user->notify(new TaskNotify($user->first_name,$user->email));
+        
         Auth::login($user);
 
         Mail::to($user)->send(new Mailo());
