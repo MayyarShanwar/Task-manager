@@ -1,4 +1,5 @@
 <x-layout :notifications=$notifications>
+
     <div class="container mx-auto px-4 py-8">
         @if (!$tasks)
             <div class="text-center py-12">
@@ -7,8 +8,8 @@
         @else
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach ($tasks as $task)
-                    <div
-                        class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <a href="/task/{{$task->id}}" method="get"
+                        class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 hover:cursor-pointer" onclick="show($task)">
                         <div class="p-6">
                             <div class="flex justify-between items-start">
                                 <h2 class="text-xl font-bold text-indigo-700">{{ $task->title }}</h2>
@@ -47,7 +48,7 @@
                                     Created {{ $task->created_at->diffForHumans() }}
                                 </span>
                                 <div class="flex space-x-2">
-
+                                    <form action="/task/{{ $task->id }}/edit" method="get">
                                     <button class="text-indigo-600 hover:text-indigo-800">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -55,10 +56,14 @@
                                             </path>
                                         </svg>
                                     </button>
+
+                                </form>
+
                                     <form action="/task/{{ $task->id }}" method="post">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="text-red-600 hover:text-red-800">
+                                        <button class="text-red-600 hover:text-red-800"
+                                        onclick="return confirm('Are you sure you want to delete this task?')">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -71,9 +76,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         @endif
+
     </div>
+
 </x-layout>

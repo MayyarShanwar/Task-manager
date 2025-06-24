@@ -17,6 +17,7 @@
 
     <!-- Vite assets -->
     @vite(['resources/js/app.js', 'resources/css/app.css'])
+    
 </head>
 
 <body class="min-h-full bg-stone-100 flex flex-col">
@@ -46,11 +47,13 @@
                         Tasks</a>
                     <a href="/Waiting"
                         class="{{ @request()->is('Waiting') ? 'border-b border-b-indigo-400 text-indigo-300 ' : '' }} hover:text-indigo-300 transition-colors px-3 py-2 text-sm font-medium">Waiting</a>
-                    <a href="/In Progress" class="{{ @request()->is('In Progress') ? 'border-b border-b-indigo-400 text-indigo-300 ' : '' }} hover:text-indigo-300 transition-colors px-3 py-2 text-sm font-medium">In
+                    <a href="/In Progress"
+                        class="{{ @request()->is('In Progress') ? 'border-b border-b-indigo-400 text-indigo-300 ' : '' }} hover:text-indigo-300 transition-colors px-3 py-2 text-sm font-medium">In
                         Progress</a>
                     <a href="/Canceled"
                         class="{{ @request()->is('Canceled') ? 'border-b border-b-indigo-400 text-indigo-300 ' : '' }} hover:text-indigo-300 transition-colors px-3 py-2 text-sm font-medium">Canceled</a>
-                    <a href="/Failed" class="{{ @request()->is('Failed') ? 'border-b border-b-indigo-400 text-indigo-300 ' : '' }} hover:text-indigo-300 transition-colors px-3 py-2 text-sm font-medium">Failed
+                    <a href="/Failed"
+                        class="{{ @request()->is('Failed') ? 'border-b border-b-indigo-400 text-indigo-300 ' : '' }} hover:text-indigo-300 transition-colors px-3 py-2 text-sm font-medium">Failed
                         To Complete</a>
                 </div>
 
@@ -107,14 +110,15 @@
                                             <div class="ml-3">
                                                 <p class="font-medium text-gray-900">{{ $notification->data['message'] }}
                                                 </p>
-                                                <p class="text-xs text-gray-500">{{$notification->created_at->diffForHumans()}}</p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ $notification->created_at->diffForHumans() }}</p>
                                             </div>
                                         </div>
                                     </a>
                                 @endforeach
                             </div>
                             <div class="px-4 py-2 border-t border-gray-200">
-                                <a href="#" class="text-xs font-medium text-indigo-600 hover:text-indigo-900">View all
+                                <a href="/showAll" class="text-xs font-medium text-indigo-600 hover:text-indigo-900">View all
                                     notifications</a>
                             </div>
                         </div>
@@ -176,12 +180,13 @@
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
-            }).then((res)=>res.json())
+            }).then((res) => res.json())
             document.getElementById('redDot').classList.add('hidden')
             document.getElementById('notificationButton').classList.add('disabled')
-            console.log("hi",notifications)
+            console.log("hi", notifications)
         }
     </script>
+    
 </body>
 
 </html>
